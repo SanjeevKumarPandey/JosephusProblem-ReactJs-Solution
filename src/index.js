@@ -18,35 +18,38 @@ class Runner extends React.Component {
 }
 
 class Console extends React.Component {
-    constructor(props){
-        super(props);
-        this.handleChange = this.handleChange.bind(this);
-    }
+    // constructor(props){
+    //     super(props);
+    //     // this.handleChange = this.handleChange.bind(this);
+    // }
 
-    handleChange(e){
-        this.props.update({feedbackText:e.target.value});
-    }
+    // handleChange(){
+    //     console.log('e.target.value: ');
+    //     //this.props.update({feedbackText:e.target.value});
+    // }
 
     render(){
         const feedbackText = this.props.feedbackText;
+        //console.log('{feedbackText}: '+feedbackText);
         return (
             <div className="console">
                 <div className="textBox">
                 <fieldset>
                     <legend>Josephus Problem's Solution:</legend>
-                    <input value={feedbackText}
-                    onChange={this.handleChange} />
+                    {/* <input value={feedbackText}
+                    onChange={this.handleChange} /> */}
+                    <textarea cols="1" rows="1" name="comment" className='tb' id='textbox' 
+                    value={feedbackText} readOnly={true}>
+                    </textarea>
                 </fieldset>
                 </div>
-                {/* <div>
-                <textarea cols="130" rows="5" name="comment" className='tb' id='textbox' 
+                <div>
+                {/* <textarea cols="130" rows="5" name="comment" className='tb' id='textbox' 
                 value={feedbackText} onChange={this.handleChange}>
-                </textarea>                    
-                </div> */}
+                </textarea>                     */}
+                </div>
                 <Runner
                 onClick={() => {this.props.onClick()}}
-                    value={feedbackText}
-                    onChange={this.handleChange}
                 />
                 <div className="canvas">
                     {/* <canvas id="canvas" width="500" height="400">
@@ -74,40 +77,42 @@ class Console extends React.Component {
         this.setState({
           feedbackText: feedback,
         });
-        console.log(feedback);
+        //console.log(feedback);
       }
 
     handleClick(){
-        //
+        // 23/04/19 - Sanjeev Pandey. {Full working code}.
         var people = [];
+        var killed = [];
         var k = 1;
         var m;
         var N = document.getElementById("peoplenumber").value;
         if(N !== "" && N > 1){
-        for(let i=1; i<=N; i++){
-            people.push(i);
-        }
-
-        do {
-            for(let j=0;j<people.length;j++){
-                m = (j+k);
-                if(m>=people.length){
-                    m=0;
-                }
-                this.update(people[j]+" killed "+people[m]);
-                people.splice(m, 1);
+            for(let i=1; i<=N; i++){
+                people.push(i);
             }
-        } while (people.length > 1);
-        this.update("Remaining One: "+people);
-    } else if(N !== "" && N == 1){
-        this.update("Too few people. You entered "+N);
-    } else if(N !== "" && N < 0){
-        this.update("We didn't think you'd go there!\
-        But what the heck, it's just a negative number.\
-        We'd handle it for you ;) ");
-    } else {
-        this.update("No value entered!");
-    }
+
+            let kcounter = 0;
+
+            do {
+                for(let j=0;j<people.length;j++){
+                    m = (j+k);
+                    if(m>=people.length) m=0;
+                    let text = `${people[j]} killed ${people[m]}`;
+                    killed[kcounter] = text;
+                    people.splice(m, 1);
+                    kcounter++;
+                }
+            } while (people.length > 1);
+            this.update(killed.toString() + "\nRemaining One: "+people);
+            killed = [];
+        } else if(N !== "" && N==1){
+            this.update("Too few people. You entered "+N);
+        } else if(N !== "" && N < 0){
+            this.update("We didn't think you'd go there!\nBut what the heck, it's just a negative number.\nWe'd handle it for you ;) ", '', '');
+        } else {
+            this.update("No value entered!");
+        }
     }
 
     render() {
@@ -116,8 +121,9 @@ class Console extends React.Component {
           <div className="game-board">
             <Console 
             onClick = {() => this.handleClick()}
-            feedbackText={this.state.feedbackText} 
-            update={this.update}
+            feedbackText={this.state.feedbackText}
+            who = {this.state.who}
+            killed = {this.state.killed}
             />
           </div>
           <div className="game-info">
